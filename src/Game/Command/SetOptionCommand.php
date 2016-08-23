@@ -3,12 +3,26 @@
 use Slack\DirectMessageChannel;
 use Slackwolf\Game;
 use Slackwolf\Game\Formatter\OptionFormatter;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the SetOptionCommand class.
  */
 class SetOptionCommand extends Command
 {
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new SetOption command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+    {
+        parent::__construct($client, $gameManager, $message, $args);
+    }
+
     public function init()
     {
         if (count($this->args) > 1)

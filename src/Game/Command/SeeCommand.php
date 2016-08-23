@@ -10,12 +10,25 @@ use Slackwolf\Game\Game;
 use Slackwolf\Game\GameState;
 use Slackwolf\Game\Role;
 use Zend\Loader\Exception\InvalidArgumentException;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the SeeCommand class.
  */
 class SeeCommand extends Command
 {
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new See command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+    {
+        parent::__construct($client, $gameManager, $message, $args);
+    }
 
     /**
      * @var string

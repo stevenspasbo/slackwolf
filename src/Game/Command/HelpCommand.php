@@ -4,12 +4,25 @@ use Slack\Channel;
 use Slack\ChannelInterface;
 use Slack\DirectMessageChannel;
 use Slackwolf\Game\Role;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the HelpCommand class.
  */
 class HelpCommand extends Command
 {
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new Help command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+    {
+        parent::__construct($client, $gameManager, $message, $args);
+    }
 
     /**
      * {@inheritdoc}

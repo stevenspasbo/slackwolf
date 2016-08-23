@@ -5,12 +5,25 @@ use Slack\Channel;
 use Slack\ChannelInterface;
 use Slackwolf\Game\Formatter\GameStatusFormatter;
 use Slackwolf\Game\Game;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the WeatherCommand class.
  */
 class WeatherCommand extends Command
 {
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new Weather command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+    {
+        parent::__construct($client, $gameManager, $message, $args);
+    }
 
     /**
      * {@inheritdoc}

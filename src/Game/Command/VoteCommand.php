@@ -4,12 +4,25 @@ use Exception;
 use Slackwolf\Game\Formatter\UserIdFormatter;
 use Slackwolf\Game\GameState;
 use Zend\Loader\Exception\InvalidArgumentException;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the VoteCommand class.
  */
 class VoteCommand extends Command
 {
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new Vote command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+    {
+        parent::__construct($client, $gameManager, $message, $args);
+    }
 
     public function init()
     {

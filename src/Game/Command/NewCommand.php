@@ -7,16 +7,33 @@ use Slackwolf\Game\GameState;
 use Slackwolf\Game\RoleStrategy;
 use Slackwolf\Game\Formatter\PlayerListFormatter;
 
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
+
 /**
  * Defines the NewCommand class.
  */
 class NewCommand extends Command
 {
-    public function init()
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new New command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
     {
+        parent::__construct($client, $gameManager, $message, $args);
+
         if ($this->channel[0] == 'D') {
             throw new Exception("Can't initiate a new game lobby by direct message.");
         }
+    }
+    public function init()
+    {
+        # TODO Remove this after all other commands have been refactored.
+
     }
 
     /**

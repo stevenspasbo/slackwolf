@@ -27,6 +27,8 @@ class AliveCommand extends Command
             return;
         }
 
+        // TODO Check if game has started first.
+
         // build list of players
         $playersList = PlayerListFormatter::format($this->game->getLivingPlayers());
         $this->gameManager->sendMessageToChannel($this->game, ":ok: Players still alive: " . $playersList);

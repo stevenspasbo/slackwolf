@@ -10,19 +10,30 @@ use Slackwolf\Game\Formatter\UserIdFormatter;
 use Slackwolf\Game\Game;
 use Slackwolf\Game\GameState;
 use Slackwolf\Game\Role;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the HealCommand class.
  */
 class HealCommand extends Command
 {
-    /**
-     * @var Game
-     */
-    private $game;
 
     public function init()
     {
+
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new Heal command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+    {
+        parent::__construct($client, $gameManager, $message, $args);
+
         $client = $this->client;
 
         if ($this->channel[0] != 'D') {
@@ -85,8 +96,6 @@ class HealCommand extends Command
                          );
             throw new InvalidArgumentException();
         }
-
-        $this->game = $this->gameManager->getGame($channelId);
 
         if ( ! $this->game) {
             $client->getChannelGroupOrDMByID($this->channel)

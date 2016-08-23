@@ -13,12 +13,25 @@ use Slackwolf\Game\GameState;
 use Slackwolf\Game\Role;
 use Slackwolf\Game\OptionManager;
 use Slackwolf\Game\OptionName;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the KillCommand class.
  */
 class KillCommand extends Command
 {
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new Kill command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+    {
+        parent::__construct($client, $gameManager, $message, $args);
+    }
 
     public function init()
     {

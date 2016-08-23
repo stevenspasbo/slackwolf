@@ -5,12 +5,25 @@ use Slack\Channel;
 use Slack\ChannelInterface;
 use Slackwolf\Game\GameState;
 use Slackwolf\Game\Formatter\PlayerListFormatter;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the LeaveCommand class.
  */
 class LeaveCommand extends Command
 {
+
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new Leave command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+    {
+        parent::__construct($client, $gameManager, $message, $args);
+    }
 
     public function init()
     {

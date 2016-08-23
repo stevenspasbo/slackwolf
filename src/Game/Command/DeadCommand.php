@@ -5,12 +5,25 @@ use Slack\Channel;
 use Slack\ChannelInterface;
 use Slackwolf\Game\Formatter\PlayerListFormatter;
 use Slackwolf\Game\Game;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the DeadCommand class.
  */
 class DeadCommand extends Command
 {
+
+//    /**
+//     * {@inheritdoc}
+//     *
+//     * Constructs a new Dead command.
+//     */
+//    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
+//    {
+//        parent::__construct($client, $gameManager, $message, $args);
+//    }
 
     /**
      * {@inheritdoc}
@@ -26,6 +39,8 @@ class DeadCommand extends Command
                });
             return;
         }
+
+        // TODO Check game status first.
 
         // build list of players
         $playersList = PlayerListFormatter::format($this->game->getDeadPlayers());

@@ -10,6 +10,9 @@ use Slackwolf\Game\Formatter\UserIdFormatter;
 use Slackwolf\Game\Game;
 use Slackwolf\Game\GameState;
 use Slackwolf\Game\Role;
+use Slack\RealTimeClient;
+use Slackwolf\Game\GameManager;
+use Slackwolf\Message\Message;
 
 /**
  * Defines the GuardCommand class.
@@ -17,8 +20,14 @@ use Slackwolf\Game\Role;
 class GuardCommand extends Command
 {
 
-    public function init()
+    /**
+     * {@inheritdoc}
+     *
+     * Constructs a new Guard command.
+     */
+    public function __construct(RealTimeClient $client, GameManager $gameManager, Message $message, array $args = null)
     {
+        parent::__construct($client, $gameManager, $message, $args);
         $client = $this->client;
 
         if ($this->channel[0] != 'D') {
@@ -27,9 +36,9 @@ class GuardCommand extends Command
 
         if (count($this->args) < 2) {
             $client->getChannelGroupOrDMByID($this->channel)
-                   ->then(function (ChannelInterface $channel) use ($client) {
-                       $client->send(":warning: Invalid command. Usage: !guard #channel @user", $channel);
-                   });
+                ->then(function (ChannelInterface $channel) use ($client) {
+                    $client->send(":warning: Invalid command. Usage: !guard #channel @user", $channel);
+                });
             throw new InvalidArgumentException("Not enough arguments");
         }
 
@@ -50,35 +59,35 @@ class GuardCommand extends Command
 
         if ($channelId != null) {
             $this->client->getChannelById($channelId)
-                         ->then(
-                             function (ChannelInterface $channel) use (&$channelId) {
-                                 $channelId = $channel->getId();
-                             },
-                             function (Exception $e) {
-                                 // Do nothing
-                             }
-                         );
+                ->then(
+                    function (ChannelInterface $channel) use (&$channelId) {
+                        $channelId = $channel->getId();
+                    },
+                    function (Exception $e) {
+                        // Do nothing
+                    }
+                );
         }
 
         if ($channelId == null) {
             $this->client->getGroupByName($channelName)
-                         ->then(
-                             function (ChannelInterface $channel) use (&$channelId) {
-                                 $channelId = $channel->getId();
-                             },
-                             function (Exception $e) {
-                                 // Do nothing
-                             }
-                         );
+                ->then(
+                    function (ChannelInterface $channel) use (&$channelId) {
+                        $channelId = $channel->getId();
+                    },
+                    function (Exception $e) {
+                        // Do nothing
+                    }
+                );
         }
 
         if ($channelId == null) {
             $this->client->getDMById($this->channel)
-                         ->then(
-                             function (DirectMessageChannel $dmc) use ($client) {
-                                 $this->client->send(":warning: Invalid channel specified. Usage: !guard #channel @user", $dmc);
-                             }
-                         );
+                ->then(
+                    function (DirectMessageChannel $dmc) use ($client) {
+                        $this->client->send(":warning: Invalid channel specified. Usage: !guard #channel @user", $dmc);
+                    }
+                );
             throw new InvalidArgumentException();
         }
 
@@ -86,13 +95,18 @@ class GuardCommand extends Command
 
         if ( ! $this->game) {
             $client->getChannelGroupOrDMByID($this->channel)
-                   ->then(function (ChannelInterface $channel) use ($client) {
-                       $client->send(":warning: No game in progress.", $channel);
-                   });
+                ->then(function (ChannelInterface $channel) use ($client) {
+                    $client->send(":warning: No game in progress.", $channel);
+                });
             throw new Exception("No game in progress.");
         }
 
         $this->args[1] = UserIdFormatter::format($this->args[1], $this->game->getOriginalPlayers());
+    }
+
+    public function init()
+    {
+        // TODO Remove this after commands have been refactored.
     }
 
     /**
@@ -104,27 +118,27 @@ class GuardCommand extends Command
 
         if ($this->game->getState() != GameState::NIGHT) {
             $client->getChannelGroupOrDMByID($this->channel)
-                   ->then(function (ChannelInterface $channel) use ($client) {
-                       $client->send(":warning: You can only guard at night.", $channel);
-                   });
+                ->then(function (ChannelInterface $channel) use ($client) {
+                    $client->send(":warning: You can only guard at night.", $channel);
+                });
             throw new Exception("Guarding occurs only during the night.");
         }
 
         // Voter should be alive
         if ( ! $this->game->isPlayerAlive($this->userId)) {
             $client->getChannelGroupOrDMByID($this->channel)
-                   ->then(function (ChannelInterface $channel) use ($client) {
-                       $client->send(":warning: You aren't alive in the specified channel.", $channel);
-                   });
+                ->then(function (ChannelInterface $channel) use ($client) {
+                    $client->send(":warning: You aren't alive in the specified channel.", $channel);
+                });
             throw new Exception("Can't guard if dead.");
         }
 
         // Person player is voting for should also be alive
         if ( ! $this->game->isPlayerAlive($this->args[1])) {
             $client->getChannelGroupOrDMByID($this->channel)
-                   ->then(function (ChannelInterface $channel) use ($client) {
-                       $client->send(":warning: Could not find that player.", $channel);
-                   });
+                ->then(function (ChannelInterface $channel) use ($client) {
+                    $client->send(":warning: Could not find that player.", $channel);
+                });
             throw new Exception("Voted player not found in game.");
         }
 
@@ -133,34 +147,34 @@ class GuardCommand extends Command
 
         if (!$player->role->isRole(Role::BODYGUARD)) {
             $client->getChannelGroupOrDMByID($this->channel)
-                   ->then(function (ChannelInterface $channel) use ($client) {
-                       $client->send(":warning: You have to be a bodyguard to guard.", $channel);
-                   });
+                ->then(function (ChannelInterface $channel) use ($client) {
+                    $client->send(":warning: You have to be a bodyguard to guard.", $channel);
+                });
             throw new Exception("Only bodyguard can guard.");
         }
 
         if ($this->game->getGuardedUserId() !== null) {
             $client->getChannelGroupOrDMByID($this->channel)
-                   ->then(function (ChannelInterface $channel) use ($client) {
-                       $client->send(":warning: You have already guarded.", $channel);
-                   });
+                ->then(function (ChannelInterface $channel) use ($client) {
+                    $client->send(":warning: You have already guarded.", $channel);
+                });
             throw new Exception("You have already guarded.");
         }
 
         if ($this->game->getLastGuardedUserId() == $this->args[1]) {
             $client->getChannelGroupOrDMByID($this->channel)
-                   ->then(function (ChannelInterface $channel) use ($client) {
-                       $client->send(":warning: You cant guard the same player as last night.", $channel);
-                   });
+                ->then(function (ChannelInterface $channel) use ($client) {
+                    $client->send(":warning: You cant guard the same player as last night.", $channel);
+                });
             throw new Exception("You cant guard the same player as last night");
         }
 
         $this->game->setGuardedUserId($this->args[1]);
 
         $client->getChannelGroupOrDMByID($this->channel)
-               ->then(function (ChannelInterface $channel) use ($client) {
-                   $client->send("Guarding successful.", $channel);
-               });
+            ->then(function (ChannelInterface $channel) use ($client) {
+                $client->send("Guarding successful.", $channel);
+            });
 
         $this->gameManager->changeGameState($this->game->getId(), GameState::DAY);
     }
